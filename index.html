@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Webhook Messenger</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,6 +19,7 @@
             align-items: center;
             height: 100vh;
         }
+
         .container {
             width: 350px;
             padding: 20px;
@@ -24,6 +27,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
+
         input, textarea, button {
             width: calc(100% - 20px);
             padding: 10px;
@@ -32,10 +36,12 @@
             border-radius: 5px;
             border: none;
         }
+
         input, textarea {
             background: #40444b;
             color: white;
         }
+
         button {
             background: #5865f2;
             color: white;
@@ -43,18 +49,22 @@
             transition: 0.3s;
             font-weight: bold;
         }
+
         button:hover {
             background: #4752c4;
         }
+
         .toggle-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin: 10px 0;
         }
+
         .toggle-container label {
             font-size: 14px;
         }
+
         .toggle {
             width: 40px;
             height: 20px;
@@ -64,6 +74,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
+
         .toggle:before {
             content: "";
             width: 18px;
@@ -75,20 +86,27 @@
             left: 2px;
             transition: 0.3s;
         }
+
         .toggle.active {
             background: #00b894;
         }
+
         .toggle.active:before {
             left: 20px;
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <h2>Discord Webhook Messenger</h2>
 
         <input type="text" id="webhookUrl" placeholder="Enter your webhook URL">
+
+        <!-- Thêm đổi tên webhook -->
+        <input type="text" id="username" placeholder="Webhook username (optional)">
+
         <textarea id="message" placeholder="Enter your message | By Mon Evade" rows="4"></textarea>
 
         <div class="toggle-container">
@@ -116,6 +134,7 @@
         async function sendMessage() {
             const webhookUrl = document.getElementById("webhookUrl").value;
             const message = document.getElementById("message").value;
+            const username = document.getElementById("username").value;
             const delay = parseInt(document.getElementById("delay").value) || 1000;
 
             if (!webhookUrl) {
@@ -127,12 +146,20 @@
                 return;
             }
 
+            const payload = {
+                content: message
+            };
+
+            if (username.trim() !== "") {
+                payload.username = username; // Thêm username nếu người dùng nhập
+            }
+
             if (spamEnabled) {
                 while (spamEnabled) {
                     await fetch(webhookUrl, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ content: message })
+                        body: JSON.stringify(payload)
                     }).catch(error => alert("Error: " + error.message));
 
                     await new Promise(resolve => setTimeout(resolve, delay));
@@ -141,7 +168,7 @@
                 fetch(webhookUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ content: message })
+                    body: JSON.stringify(payload)
                 })
                 .then(response => {
                     if (response.ok) {
